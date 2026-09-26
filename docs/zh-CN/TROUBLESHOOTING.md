@@ -15,6 +15,20 @@
 
 对 `/mcp` 发送 `GET` 可能得到 `405 Method Not Allowed`，因为 MCP 客户端使用 `POST` 发送 JSON-RPC 请求；单凭这个响应不能判定服务故障。`404` 通常是路径错误或路由缺失；`502` 通常表示上游不可达；`401` 表示凭据缺失或被拒绝；返回登录 HTML 通常表示客户端未完成或无法跟随认证流程。
 
+## OAuth MCP 已显示工具，但调用返回 `401 Unauthorized`
+
+客户端能够发现工具名称和参数结构，不代表已通过真实请求的 OAuth 鉴权。工具列表可能先于认证调用成功，因此不能仅凭工具已显示就认定令牌或网关到 MCP 服务的身份断言有效。
+
+如果服务部署在 Cloudflare Access 后面，请确认 MCP 服务读取的请求头与 Cloudflare 实际发送的一致。Cloudflare 会在 `Cf-Access-Jwt-Assertion` 请求头中转发签名 JWT；请在 MCP 服务的私有环境文件中显式设置：
+
+```dotenv
+DEEPTUTOR_MCP_PROXY_JWT_HEADER=cf-access-jwt-assertion
+```
+
+请求头名称不区分大小写。修改环境配置后重启 MCP 服务。还要核对 JWT host、issuer、JWKS URL、audience、identity claim 和 allowed subject 是否与 Cloudflare Access 应用及令牌相符。不要记录或分享断言内容本身。
+
+用同一个云端 OAuth 客户端验证修复：先调用只读的 `deeptutor_status`，再调用 `list_mastery_paths` 等数据工具。两者成功后，再单独用 `search_vector_knowledge` 测试向量检索；OAuth 正常时，索引或文件系统问题仍可能使向量检索失败。本地 stdio/API Key 调用或 `/health` 响应都不能证明云端 OAuth 路由可用。Cloudflare 在[ JWT 验证文档](https://developers.cloudflare.com/cloudflare-one/access-controls/applications/http-apps/authorization-cookie/validating-json/)中说明了该断言请求头。
+
 ### Poke CLI 包名写法
 
 这是与服务 URL 故障不同的问题。`npx poke@mcp add ...` 会让 npm 查找名为 `mcp` 的包版本，可能得到 `ETARGET`。正确写法是：

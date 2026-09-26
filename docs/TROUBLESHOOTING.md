@@ -15,6 +15,20 @@ A URL such as `https://mcp.example.net/mcp` can be syntactically valid and still
 
 A `GET /mcp` request may return `405 Method Not Allowed` because MCP clients use POST for JSON-RPC requests. That response alone does not show that the server is broken. A `404` usually points to a wrong path or missing route; `502` usually points to an unreachable upstream; `401` points to missing or rejected credentials; a login HTML page usually means the client did not complete, or cannot follow, the configured authentication flow.
 
+## OAuth MCP tools appear, but calls return `401 Unauthorized`
+
+Tool names and schemas can be discovered before a real authenticated tool call succeeds. Seeing the tools in a client therefore does not prove that its OAuth token or the gateway-to-MCP identity assertion is accepted.
+
+For a deployment behind Cloudflare Access, confirm that the MCP service reads the assertion header Cloudflare actually sends. Cloudflare forwards the signed JWT in `Cf-Access-Jwt-Assertion`; set the header explicitly in the MCP service's private environment file:
+
+```dotenv
+DEEPTUTOR_MCP_PROXY_JWT_HEADER=cf-access-jwt-assertion
+```
+
+Header names are case-insensitive. Restart the MCP service after changing its environment. Also verify that the configured JWT host, issuer, JWKS URL, audience, identity claim, and allowed subject match the Cloudflare Access application and the token. Never log or share the assertion itself.
+
+Use the same cloud-connected OAuth client to verify the fix: call the read-only `deeptutor_status`, then a representative data tool such as `list_mastery_paths`. If those succeed, test vector retrieval separately with `search_vector_knowledge`; vector search can still fail for index or filesystem reasons even when OAuth works. A local stdio/API-key call or `/health` response does not verify the cloud OAuth route. Cloudflare documents the assertion header in its [JWT validation guidance](https://developers.cloudflare.com/cloudflare-one/access-controls/applications/http-apps/authorization-cookie/validating-json/).
+
 ### Poke CLI package-name typo
 
 This is a separate issue from a server URL failure. `npx poke@mcp add ...` asks npm for a package version named `mcp` and can fail with `ETARGET`. The documented form is:
