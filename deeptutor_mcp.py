@@ -402,6 +402,14 @@ def dispatch(name, args):
 
 
 DESTRUCTIVE_TOOLS = {"replace_course_syllabus", "replace_mastery_outline", "delete_question_entry"}
+OUTPUT_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "result": {"description": "原始 DeepTutor 工具返回值；其具体字段由对应 DeepTutor API 决定。"}
+    },
+    "required": ["result"],
+    "additionalProperties": False,
+}
 
 
 def tool(name, description, properties=None, required_keys=None):
@@ -417,6 +425,7 @@ def tool(name, description, properties=None, required_keys=None):
         "description": description,
         "annotations": {"readOnlyHint": not is_write, "destructiveHint": name in DESTRUCTIVE_TOOLS},
         "inputSchema": {"type": "object", "properties": properties, "required": required_keys or [], "additionalProperties": False},
+        "outputSchema": OUTPUT_SCHEMA,
     }
 
 
@@ -589,7 +598,10 @@ def main():
                 params = request.get("params", {})
                 try:
                     data = dispatch(params.get("name", ""), params.get("arguments") or {})
-                    result = {"content": [{"type": "text", "text": json.dumps(data, ensure_ascii=False)}]}
+                    result = {
+                        "content": [{"type": "text", "text": json.dumps(data, ensure_ascii=False)}],
+                        "structuredContent": {"result": data},
+                    }
                 except Exception as exc:
                     result = {"content": [{"type": "text", "text": str(exc)}], "isError": True}
             else:

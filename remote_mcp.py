@@ -67,8 +67,9 @@ async def call_tool(name, arguments):
         raise ValueError("Unknown or unavailable remote tool")
     result = await asyncio.to_thread(bridge.dispatch, name, arguments)
     if isinstance(result, list):
-        return {"count": len(result), "items": result}
-    return result
+        result = {"count": len(result), "items": result}
+    text_content = types.TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))
+    return ([text_content], {"result": result})
 
 
 manager = StreamableHTTPSessionManager(
