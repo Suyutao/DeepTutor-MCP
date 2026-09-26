@@ -8,6 +8,7 @@ version = "0.2.0"
 description = "Expose DeepTutor learning data and study tools to MCP-compatible clients"
 readme = "README.md"
 requires-python = ">=3.11"
+license = "Apache-2.0"
 
 [project.optional-dependencies]
 http = ["mcp>=1.29.1", "starlette>=0.37", "uvicorn>=0.30"]

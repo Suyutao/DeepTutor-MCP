@@ -88,4 +88,4 @@ The bridge targets DeepTutor's HTTP API and CLI. Those interfaces can change bet
 
 ## Project status
 
-This is an independent adapter prepared for maintainer review. It is not an official DeepTutor component, and client examples do not imply every client/version has been tested. A public release still needs a project license chosen by the maintainers and a compatibility policy.
+This independent adapter is licensed under Apache-2.0 and is prepared for maintainer review. It is not an official DeepTutor component, and client examples do not imply every client/version has been tested. Compatibility policy remains subject to maintainer review.
