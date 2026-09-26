@@ -8,13 +8,13 @@ This setup is for connecting your own DeepTutor installation to your own ChatGPT
 - Choose how ChatGPT will reach the MCP server:
   - **Private connection:** use OpenAI Secure MCP Tunnel where available. The server can remain private and does not need an inbound public port or public domain.
   - **Remote HTTPS connection:** publish only the MCP endpoint behind HTTPS, using a domain and an authentication provider. A tunnel/reverse proxy and an OAuth identity gateway are deployment choices; this MCP project does not require a particular provider.
-- Confirm that your ChatGPT subscription and workspace allow custom MCP apps. As of 2026-09-26, OpenAI's help page explicitly lists read/fetch MCP access for Pro and full read/write MCP support for Business, Enterprise, and Edu; it does not list Plus. In maintainer testing, a Plus account showed Developer Mode in ChatGPT web settings and could open the Add MCP Server flow after enabling it. This confirms that the flow was available to that account, but does not establish availability for every Plus account or confirm full read/write access; staged rollout or account-level experiments may explain the difference. The custom-app flow is web-only.
+- Confirm that your ChatGPT subscription and workspace allow custom MCP apps. As of 2026-09-26, OpenAI's help page explicitly lists read/fetch MCP access for Pro and full read/write MCP support for Business, Enterprise, and Edu; it does not list Plus. In maintainer testing, a Plus account showed Developer Mode in ChatGPT web settings and could open the Add MCP Server flow after enabling it. This confirms that the flow was available to that account, but does not establish availability for every Plus account or confirm full read/write access; staged rollout or account-level experiments may explain the difference.
 
 ## Add the app in ChatGPT
 
 The custom-app flow is spread across settings, so follow this order:
 
-1. Open ChatGPT on the web and enable Developer Mode or custom MCP connectors if your plan and workspace expose that setting. In a managed workspace, an administrator may need to enable it or grant your account access.
+1. Open ChatGPT on the web and enable Developer Mode or custom MCP connectors if your plan and workspace expose that setting. In a managed workspace, an administrator may need to enable it or grant your account access. Maintainer testing found that adding the MCP server must be done on the web.
 2. Open **Settings → Apps** (or the workspace's **Apps** settings) and choose **Create**.
 3. Enter a name such as **DeepTutor Learning** and the Streamable HTTP endpoint URL ending in `/mcp`. **Upload the icon before creating the app:** maintainer testing found that the icon could not be changed after creation; without an upload, ChatGPT showed a blank black icon. The upload limit is under 10 KB. This repository includes a [DeepTutor icon](../assets/DeepTutor-icon.png), a 64 × 63 PNG of 7,361 bytes.
 4. Pick the authentication mode supported by your deployment and client connection:
@@ -26,6 +26,12 @@ The custom-app flow is spread across settings, so follow this order:
 7. For writes, inspect the proposed target and values. The server requires `confirm: true`, and ChatGPT may also ask for its own confirmation depending on app permissions and action risk.
 
 The app is managed in your own ChatGPT settings. This guide does not publish a public store listing.
+
+## Use the connection from other clients
+
+Maintainer testing found that after adding and authorizing the MCP app on the web, the same account could use it in the ChatGPT mobile app. Other ChatGPT clients that support ChatGPT Apps were also observed to work. In these tests, setup was web-only; subsequent tool use was not limited to the web. Availability may vary by account, client version, plan, and workspace policy.
+
+This observation conflicts with the current [OpenAI help article](https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt), which says MCP apps are web-only. This guide records an account-specific test, not a guarantee for all users. The reason for the difference—such as rollout, client version, or account-level conditions—has not been established.
 
 ## Keep in mind
 
