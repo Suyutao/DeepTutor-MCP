@@ -27,11 +27,13 @@ All 58 tools publish an MCP output schema and return the original DeepTutor payl
 
 The current 58 tool names and input schemas are kept identical across stdio and remote HTTP. `DEEPTUTOR_MCP_TIMEZONE` can set the default used by Practice tools; the legacy default remains `Asia/Shanghai` for existing installations, while `.env.example` shows `UTC` for a fresh deployment.
 
-## Future direction: cross-client learning-process feedback
+## Future direction: DeepTutor as a learning backend
 
-External clients can already write learning outcomes to DeepTutor, such as a mastery update. The conversation that led to that update, however, remains in the external client. Questions, incorrect or misguided attempts, misunderstandings, subsequent corrections, and feedback are critically important evidence for understanding how a learner thinks. If DeepTutor records only what the learner ultimately reports mastering, it is very likely to miss difficulties revealed during the learning process.
+This MCP server wraps DeepTutor's existing APIs; it can expose only the operations and data semantics those APIs provide. External clients can write learning outcomes such as mastery updates, but their questions, incorrect attempts, misunderstandings, corrections, and feedback remain in the client conversation. These are critically important evidence for understanding how a learner thinks, and outcome-only records are very likely to miss difficulties revealed during learning.
 
-A future design should let any MCP-compatible client send learning-process records back to DeepTutor for storage alongside its learning data, so DeepTutor can use activity from different clients to identify misconceptions and weak points. This is a design direction, not a capability implemented or promised by the current MCP tools.
+This cannot be addressed reliably by adding an MCP wrapper alone. DeepTutor itself would need stable backend APIs and data structures for external clients to submit learning-process records, with provenance that identifies who made each claim, which client and conversation it came from, what evidence supports it, and when it was recorded. In particular, a learner's explicit self-report, a tutor's assessment, and a system assessment based on practice evidence must remain distinct and coexist; a tutor judgment must never be stored as if the learner confirmed mastery. Useful provenance may include actor type and ID, source client/conversation, evidence references, confidence, and timestamp.
+
+Once DeepTutor provides these backend capabilities, this MCP project can adapt and expose them to compatible clients. This is an upstream-dependent design direction, not a capability implemented or promised by the current MCP tools.
 
 ## Requirements
 
