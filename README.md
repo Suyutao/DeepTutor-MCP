@@ -1,5 +1,7 @@
 # DeepTutor MCP
 
+中文文档：[简体中文](README.zh-CN.md)。
+
 DeepTutor MCP exposes DeepTutor's learning data and study-specific tools to MCP-compatible AI clients. It is designed for self-hosted DeepTutor installations: the user runs the MCP server and connects it to their own DeepTutor instance. The AI client handles the ordinary conversation and tutoring; DeepTutor supplies learning state, source material, and study operations through its APIs.
 
 The same canonical tool catalog is available through local stdio and remote Streamable HTTP transports. Clients such as Codex, ChatGPT, and Poke are examples, not dependencies of the project. Authentication is selected for the deployment and client: API-key bearer authentication for clients that support it, or a trusted OAuth gateway that validates the user and forwards a signed identity assertion.
@@ -20,6 +22,8 @@ The current catalog contains 58 tools covering:
 Ordinary explanation, teaching, planning, and synthesis run in the connected AI client; they do not start a DeepTutor conversation. Vector search calls DeepTutor's LlamaIndex retriever and returns source passages. It requires a ready compatible index and access to the knowledge-base directory.
 
 Writes are marked in tool descriptions and require `confirm: true`. This is an application-level guard, not a substitute for endpoint authentication, network controls, or user review. Outline replacement checks a revision; Practice reviews use the current item version and a unique request ID.
+
+All 58 tools publish an MCP output schema and return the original DeepTutor payload under `structuredContent.result`. The existing text content channel continues to carry the JSON representation for clients that do not consume structured results. The schema intentionally leaves the payload's internal fields open because those are determined by the corresponding DeepTutor API and can vary by version.
 
 The current 58 tool names and input schemas are kept identical across stdio and remote HTTP. `DEEPTUTOR_MCP_TIMEZONE` can set the default used by Practice tools; the legacy default remains `Asia/Shanghai` for existing installations, while `.env.example` shows `UTC` for a fresh deployment.
 
@@ -76,7 +80,7 @@ The MCP project does not operate an OAuth account service. A gateway may be Clou
 - [Self-hosted deployment](docs/DEPLOYMENT.md)
 - [Troubleshooting](docs/TROUBLESHOOTING.md)
 
-ChatGPT's custom-app interface and plan availability vary by subscription and workspace policy. The current OpenAI guide distinguishes read/fetch access from full write-capable MCP access; consult it before setup: [Developer mode and MCP apps in ChatGPT](https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt).
+ChatGPT's custom-app interface and plan availability vary by subscription and workspace policy. The current OpenAI guide distinguishes read/fetch access from full write-capable MCP access; consult it before setup: [Developer mode and MCP apps in ChatGPT](https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt). ChatGPT plugin ZIP upload is a separate workspace feature and does not deploy the MCP backend; see [Plugins in ChatGPT and Codex](https://help.openai.com/en/articles/20001256-plugins-in-chatgpt-and-codex).
 
 ## DeepTutor compatibility
 

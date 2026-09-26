@@ -2,7 +2,7 @@
 Description=DeepTutor MCP remote server
 After=network-online.target
 Wants=network-online.target
-# Add this when the knowledge base lives on a separate mount:
+# 知识库位于独立挂载盘时，可添加实际挂载路径：
 # RequiresMountsFor=/path/to/knowledge-base-storage
 
 [Service]
