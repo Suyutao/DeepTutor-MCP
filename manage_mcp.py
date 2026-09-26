@@ -12,7 +12,10 @@ import urllib.request
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-ENV_FILE = Path(os.environ.get("DEEPTUTOR_MCP_ENV_FILE", os.environ.get("POKE_MCP_ENV_FILE", SCRIPT_DIR / ".env")))
+configured_env_file = os.environ.get("DEEPTUTOR_MCP_ENV_FILE", os.environ.get("POKE_MCP_ENV_FILE", "")).strip()
+ENV_FILE = Path(configured_env_file) if configured_env_file else SCRIPT_DIR / ".env"
+if not configured_env_file and not ENV_FILE.exists() and (SCRIPT_DIR / "poke.env").exists():
+    ENV_FILE = SCRIPT_DIR / "poke.env"
 
 
 def read_env():
@@ -62,7 +65,9 @@ def write_secret(path, secret):
 
 
 def endpoint_urls(env):
-    local = configured(env, "DEEPTUTOR_MCP_LOCAL_URL", default="http://127.0.0.1:8000").rstrip("/")
+    legacy_poke_config = any(key.startswith("POKE_MCP_") for key in env)
+    default_local = "http://127.0.0.1:8765" if legacy_poke_config else "http://127.0.0.1:8000"
+    local = configured(env, "DEEPTUTOR_MCP_LOCAL_URL", "POKE_MCP_LOCAL_URL", default_local).rstrip("/")
     public = configured(env, "DEEPTUTOR_MCP_PUBLIC_URL").rstrip("/")
     host = configured(env, "DEEPTUTOR_MCP_PUBLIC_HOST", "POKE_MCP_PUBLIC_HOST")
     if not public and host:

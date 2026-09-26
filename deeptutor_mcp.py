@@ -25,7 +25,7 @@ TOKEN_FILE = setting("DEEPTUTOR_TOKEN_FILE")
 SSH_TARGET = setting("DEEPTUTOR_SSH_TARGET")
 REMOTE_CLI = setting("DEEPTUTOR_REMOTE_CLI", "deeptutor")
 REMOTE_HOME = setting("DEEPTUTOR_REMOTE_HOME")
-DEFAULT_TIMEZONE = setting("DEEPTUTOR_MCP_TIMEZONE", "UTC")
+DEFAULT_TIMEZONE = setting("DEEPTUTOR_MCP_TIMEZONE", "Asia/Shanghai")
 
 
 def http(method, path, *, query=None, body=None):
@@ -444,7 +444,7 @@ VECTOR_TOOL = tool(
 TOOLS = [
     tool("deeptutor_status", "Check the configured DeepTutor backend and API availability"),
     tool("list_deeptutor_capabilities", "List installed DeepTutor capabilities; informational unless the user directly requests a DeepTutor conversation"),
-    tool("learning_overview", "Read courses, mastery summaries and due practice in one request; no DeepTutor model turn", {"timezone": S("IANA timezone; defaults to the configured server timezone")}),
+    tool("learning_overview", "Read courses, mastery summaries and due practice in one request; no DeepTutor model turn", {"timezone": S("IANA timezone; default Asia/Shanghai")}),
     tool("list_courses", "List courses and their syllabus and linked resources"),
     tool("get_course_state", "Read one course's syllabus, resources, sessions, mastery and question statistics", COURSE, ["course_id"]),
     tool("list_course_resource_candidates", "List resources that can be attached to a course"),
@@ -464,12 +464,12 @@ TOOLS = [
     tool("upsert_question_entry", "Import or update a native Question Bank entry by stable question ID", {"question_id": S("Stable question ID"), "question": S("Question text"), "question_type": S("Question type"), "options": {"type": "object", "additionalProperties": {"type": "string"}}, "correct_answer": S("Reference answer"), "explanation": S("Explanation"), "difficulty": S("Difficulty"), "user_answer": S("Learner's answer"), "is_correct": B("Whether learner was correct"), "material_title": S("Source title"), "origin_ref": S("Source reference"), **CONFIRM}, ["question_id", "question", "confirm"]),
     tool("update_question_entry", "Update supported metadata on one Question Bank entry", {**ENTRY, "bookmarked": B("Bookmark state"), "resolved": B("Resolved state"), "ai_judgment": S("AI judgment note"), "followup_session_id": S("Follow-up session ID"), **CONFIRM}, ["entry_id", "confirm"]),
     tool("delete_question_entry", "Delete one Question Bank entry", {**ENTRY, **CONFIRM}, ["entry_id", "confirm"]),
-    tool("practice_summary", "Read Practice counts, due items and next due time", {"timezone": S("IANA timezone; defaults to the configured server timezone"), "all_workspaces": B("Include all available workspaces")}),
-    tool("practice_queue", "Read due Question Bank practice items", {"timezone": S("IANA timezone; defaults to the configured server timezone"), "limit": I("Maximum items, max 100"), "all_workspaces": B("Include all available workspaces")}),
+    tool("practice_summary", "Read Practice counts, due items and next due time", {"timezone": S("IANA timezone, defaults to Asia/Shanghai"), "all_workspaces": B("Include all available workspaces")}),
+    tool("practice_queue", "Read due Question Bank practice items", {"timezone": S("IANA timezone, defaults to Asia/Shanghai"), "limit": I("Maximum items, max 100"), "all_workspaces": B("Include all available workspaces")}),
     tool("get_practice_question", "Read a practice question and its review version", ENTRY, ["entry_id"]),
     tool("check_practice_answer", "Check an answer without recording a review", {**ENTRY, "answer": S("Learner's answer")}, ["entry_id", "answer"]),
     tool("record_practice_review", "Record a completed review using the question's current version and a unique request ID", {**ENTRY, "request_id": S("Unique ID, at least 16 URL-safe characters"), "version": I("Version from get_practice_question"), "rating": S("again, hard, good or easy", enum=["again", "hard", "good", "easy"]), "answer": S("Learner's answer"), "self_report": B("True for self-assessed answer"), **CONFIRM}, ["entry_id", "request_id", "version", "rating", "confirm"]),
-    tool("practice_analytics", "Read practice trends and source counts for up to 90 days", {"timezone": S("IANA timezone; defaults to the configured server timezone"), "days": I("Number of days, max 90"), "course_id": S("Optional course ID"), "all_workspaces": B("Include all available workspaces")}),
+    tool("practice_analytics", "Read practice trends and source counts for up to 90 days", {"timezone": S("IANA timezone; default Asia/Shanghai"), "days": I("Number of days, max 90"), "course_id": S("Optional course ID"), "all_workspaces": B("Include all available workspaces")}),
     tool("list_question_categories", "List native Question Bank categories", {"course_id": S("Optional course ID")}),
     tool("list_books", "List generated learning books and their status"),
     tool("get_book_spine", "Read a book's chapter and page structure", BOOK, ["book_id"]),

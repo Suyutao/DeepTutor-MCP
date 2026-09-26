@@ -21,6 +21,8 @@ Ordinary explanation, teaching, planning, and synthesis run in the connected AI 
 
 Writes are marked in tool descriptions and require `confirm: true`. This is an application-level guard, not a substitute for endpoint authentication, network controls, or user review. Outline replacement checks a revision; Practice reviews use the current item version and a unique request ID.
 
+The current 58 tool names and input schemas are kept identical across stdio and remote HTTP. `DEEPTUTOR_MCP_TIMEZONE` can set the default used by Practice tools; the legacy default remains `Asia/Shanghai` for existing installations, while `.env.example` shows `UTC` for a fresh deployment.
+
 ## Requirements
 
 - Python 3.11 or newer
