@@ -29,7 +29,7 @@ The current 58 tool names and input schemas are kept identical across stdio and 
 
 ## Future direction: cross-client learning-process feedback
 
-External clients can already write learning outcomes to DeepTutor, such as a mastery update. The conversation that led to that update, however, remains in the external client. Questions, incorrect attempts, misunderstandings, corrections, and feedback are valuable evidence of how a learner is thinking; without them, DeepTutor may see what the learner reports mastering but miss the difficulties exposed along the way.
+External clients can already write learning outcomes to DeepTutor, such as a mastery update. The conversation that led to that update, however, remains in the external client. Questions, incorrect or misguided attempts, misunderstandings, subsequent corrections, and feedback are critically important evidence for understanding how a learner thinks. If DeepTutor records only what the learner ultimately reports mastering, it is very likely to miss difficulties revealed during the learning process.
 
 A future design should let any MCP-compatible client send learning-process records back to DeepTutor for storage alongside its learning data, so DeepTutor can use activity from different clients to identify misconceptions and weak points. This is a design direction, not a capability implemented or promised by the current MCP tools.
 
