@@ -73,7 +73,9 @@ MCP 地址为 `/mcp`；`/health` 只检查进程是否响应。若由反向代�
 
 ## ChatGPT 客户端说明
 
-ChatGPT 的自定义 MCP 应用需要用户自己在 ChatGPT 中配置远程地址、认证方式并扫描工具。上传 ChatGPT 插件 ZIP 与部署 MCP 后端是两件不同的事；上传不会替用户运行 DeepTutor 或完成后端授权。ChatGPT 自定义 MCP 的套餐、写入权限及工作区策略会影响可用性。请查看[ChatGPT 官方开发者模式与 MCP 应用说明](https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt)、[插件 ZIP 说明](https://help.openai.com/en/articles/20001256-plugins-in-chatgpt-and-codex)和[接入步骤](docs/zh-CN/CHATGPT.md)。
+ChatGPT 的自定义 MCP 应用需要用户自己在 ChatGPT 中配置远程地址、认证方式并扫描工具。官方套餐说明没有列出 Plus；但维护者实测某个 Plus 账号在开启开发者模式后能看到添加 MCP 服务器的入口。这只能证明该账号可进入接入流程，不能保证所有 Plus 账号或完整读写能力均可用，可能与灰度或分批开放有关。上传 ChatGPT 插件 ZIP 与部署 MCP 后端是两件不同的事；上传不会替用户运行 DeepTutor 或完成后端授权。请查看[ChatGPT 官方开发者模式与 MCP 应用说明](https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt)、[插件 ZIP 说明](https://help.openai.com/en/articles/20001256-plugins-in-chatgpt-and-codex)和[接入步骤](docs/zh-CN/CHATGPT.md)。
+
+应用图标需要在创建 MCP 应用时上传。维护者测试发现，创建后无法更换图标；不上传时会显示黑色空图标。上传图标必须小于 10 KB。仓库提供的 [DeepTutor 图标](assets/DeepTutor-icon.png)为 64 × 63 PNG，大小 7,361 字节。
 
 ## DeepTutor 兼容性
 

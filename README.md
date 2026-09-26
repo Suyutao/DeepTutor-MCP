@@ -80,7 +80,7 @@ The MCP project does not operate an OAuth account service. A gateway may be Clou
 - [Self-hosted deployment](docs/DEPLOYMENT.md)
 - [Troubleshooting](docs/TROUBLESHOOTING.md)
 
-ChatGPT's custom-app interface and plan availability vary by subscription and workspace policy. The current OpenAI guide distinguishes read/fetch access from full write-capable MCP access; consult it before setup: [Developer mode and MCP apps in ChatGPT](https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt). ChatGPT plugin ZIP upload is a separate workspace feature and does not deploy the MCP backend; see [Plugins in ChatGPT and Codex](https://help.openai.com/en/articles/20001256-plugins-in-chatgpt-and-codex).
+ChatGPT's custom-app interface and plan availability vary by subscription and workspace policy. The current OpenAI guide lists read/fetch access for Pro and full read/write access for Business, Enterprise, and Edu, but does not list Plus. In maintainer testing, one Plus account could open the Developer Mode and Add MCP Server flows; this is account-specific evidence and may reflect staged rollout, not a guarantee for every Plus account or full read/write access. See [Developer mode and MCP apps in ChatGPT](https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt). ChatGPT plugin ZIP upload is a separate workspace feature and does not deploy the MCP backend; see [Plugins in ChatGPT and Codex](https://help.openai.com/en/articles/20001256-plugins-in-chatgpt-and-codex).
 
 ## DeepTutor compatibility
 
