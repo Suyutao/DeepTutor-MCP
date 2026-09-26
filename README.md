@@ -27,6 +27,12 @@ All 58 tools publish an MCP output schema and return the original DeepTutor payl
 
 The current 58 tool names and input schemas are kept identical across stdio and remote HTTP. `DEEPTUTOR_MCP_TIMEZONE` can set the default used by Practice tools; the legacy default remains `Asia/Shanghai` for existing installations, while `.env.example` shows `UTC` for a fresh deployment.
 
+## Future direction: cross-client learning-process feedback
+
+External clients can already write learning outcomes to DeepTutor, such as a mastery update. The conversation that led to that update, however, remains in the external client. Questions, incorrect attempts, misunderstandings, corrections, and feedback are valuable evidence of how a learner is thinking; without them, DeepTutor may see what the learner reports mastering but miss the difficulties exposed along the way.
+
+A future design should let any MCP-compatible client send learning-process records back to DeepTutor for storage alongside its learning data, so DeepTutor can use activity from different clients to identify misconceptions and weak points. This is a design direction, not a capability implemented or promised by the current MCP tools.
+
 ## Requirements
 
 - Python 3.11 or newer
