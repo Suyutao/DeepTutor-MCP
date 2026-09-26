@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "deeptutor-mcp"
+version = "0.2.0"
+description = "Expose DeepTutor learning data and study tools to MCP-compatible clients"
+readme = "README.md"
+requires-python = ">=3.11"
+
+[project.optional-dependencies]
+http = ["mcp>=1.2", "starlette>=0.37", "uvicorn>=0.30"]
+proxy-jwt = ["PyJWT[crypto]>=2.8"]
+
+[project.scripts]
+deeptutor-mcp-manage = "manage_mcp:main"
+
+[tool.setuptools]
+py-modules = ["deeptutor_mcp", "remote_mcp", "manage_mcp", "provision_client_key"]

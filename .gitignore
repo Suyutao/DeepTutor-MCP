@@ -1,0 +1,10 @@
+.env
+*.env
+*.key
+*.token
+*.pem
+*.json.tmp
+__pycache__/
+*.py[cod]
+.venv/
+venv/
