@@ -21,10 +21,10 @@ from starlette.routing import Route
 import deeptutor_mcp as bridge
 
 
-API_KEY_FILE = os.environ.get("DEEPTUTOR_MCP_API_KEY_FILE", os.environ.get("POKE_MCP_API_KEY_FILE", "")).strip()
-USER_KEYS_FILE = os.environ.get("DEEPTUTOR_MCP_CLIENT_KEYS_FILE", os.environ.get("POKE_MCP_USER_KEYS_FILE", "")).strip()
+API_KEY_FILE = os.environ.get("DEEPTUTOR_MCP_API_KEY_FILE", "").strip()
+USER_KEYS_FILE = os.environ.get("DEEPTUTOR_MCP_CLIENT_KEYS_FILE", "").strip()
 KB_ROOT = os.environ.get("DEEPTUTOR_KB_ROOT", "").strip()
-PUBLIC_HOST = os.environ.get("DEEPTUTOR_MCP_PUBLIC_HOST", os.environ.get("POKE_MCP_PUBLIC_HOST", "")).strip().lower()
+PUBLIC_HOST = os.environ.get("DEEPTUTOR_MCP_PUBLIC_HOST", "").strip().lower()
 PROXY_JWT_HOST = os.environ.get("DEEPTUTOR_MCP_PROXY_JWT_HOST", os.environ.get("CF_ACCESS_PUBLIC_HOST", "")).strip().lower()
 PROXY_JWT_ISSUER = os.environ.get("DEEPTUTOR_MCP_PROXY_JWT_ISSUER", "").strip().rstrip("/")
 if not PROXY_JWT_ISSUER and os.environ.get("CF_ACCESS_TEAM_DOMAIN"):
@@ -34,8 +34,7 @@ PROXY_JWT_AUDIENCE = os.environ.get("DEEPTUTOR_MCP_PROXY_JWT_AUDIENCE", os.envir
 PROXY_JWT_ALLOWED_SUBJECT = os.environ.get("DEEPTUTOR_MCP_PROXY_JWT_ALLOWED_SUBJECT", os.environ.get("CF_ACCESS_EMAIL", "")).strip().lower()
 default_proxy_header = "cf-access-jwt-assertion" if os.environ.get("CF_ACCESS_PUBLIC_HOST") else "x-mcp-auth-assertion"
 PROXY_JWT_HEADER = os.environ.get("DEEPTUTOR_MCP_PROXY_JWT_HEADER", default_proxy_header).strip().lower().encode("ascii")
-default_client_header = "X-Poke-User-Id" if os.environ.get("POKE_MCP_USER_KEYS_FILE") else "X-Client-Id"
-CLIENT_ID_HEADER = os.environ.get("DEEPTUTOR_MCP_CLIENT_ID_HEADER", default_client_header).strip().lower().encode("ascii")
+CLIENT_ID_HEADER = os.environ.get("DEEPTUTOR_MCP_CLIENT_ID_HEADER", "X-Client-Id").strip().lower().encode("ascii")
 if not API_KEY_FILE and not USER_KEYS_FILE and not PROXY_JWT_HOST:
     raise RuntimeError("Configure an API key file, client key registry, or trusted proxy JWT validator")
 if PROXY_JWT_HOST and not (PROXY_JWT_ISSUER and PROXY_JWT_AUDIENCE and PROXY_JWT_ALLOWED_SUBJECT):

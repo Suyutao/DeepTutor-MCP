@@ -12,7 +12,7 @@ import sys
 def main():
     if len(sys.argv) != 2 or not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", sys.argv[1]):
         raise SystemExit("Usage: provision_client_key.py <client ID>")
-    registry_value = os.environ.get("DEEPTUTOR_MCP_CLIENT_KEYS_FILE", os.environ.get("POKE_MCP_USER_KEYS_FILE", "")).strip()
+    registry_value = os.environ.get("DEEPTUTOR_MCP_CLIENT_KEYS_FILE", "").strip()
     if not registry_value:
         raise SystemExit("Set DEEPTUTOR_MCP_CLIENT_KEYS_FILE")
     path = Path(registry_value)

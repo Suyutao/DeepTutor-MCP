@@ -12,10 +12,8 @@ import urllib.request
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-configured_env_file = os.environ.get("DEEPTUTOR_MCP_ENV_FILE", os.environ.get("POKE_MCP_ENV_FILE", "")).strip()
+configured_env_file = os.environ.get("DEEPTUTOR_MCP_ENV_FILE", "").strip()
 ENV_FILE = Path(configured_env_file) if configured_env_file else SCRIPT_DIR / ".env"
-if not configured_env_file and not ENV_FILE.exists() and (SCRIPT_DIR / "poke.env").exists():
-    ENV_FILE = SCRIPT_DIR / "poke.env"
 
 
 def read_env():
@@ -31,8 +29,8 @@ def read_env():
     return values
 
 
-def configured(env, key, legacy=None, default=""):
-    return env.get(key, env.get(legacy, default) if legacy else default).strip()
+def configured(env, key, default=""):
+    return env.get(key, default).strip()
 
 
 def read_keys(path):
@@ -65,11 +63,9 @@ def write_secret(path, secret):
 
 
 def endpoint_urls(env):
-    legacy_poke_config = any(key.startswith("POKE_MCP_") for key in env)
-    default_local = "http://127.0.0.1:8765" if legacy_poke_config else "http://127.0.0.1:8000"
-    local = configured(env, "DEEPTUTOR_MCP_LOCAL_URL", "POKE_MCP_LOCAL_URL", default_local).rstrip("/")
+    local = configured(env, "DEEPTUTOR_MCP_LOCAL_URL", "http://127.0.0.1:8000").rstrip("/")
     public = configured(env, "DEEPTUTOR_MCP_PUBLIC_URL").rstrip("/")
-    host = configured(env, "DEEPTUTOR_MCP_PUBLIC_HOST", "POKE_MCP_PUBLIC_HOST")
+    host = configured(env, "DEEPTUTOR_MCP_PUBLIC_HOST")
     if not public and host:
         public = "https://" + host
     return local, public
@@ -99,7 +95,7 @@ def http_check(url, token=None, client_id=None, client_id_header="X-Client-Id"):
 
 
 def service_status(env):
-    service = configured(env, "DEEPTUTOR_MCP_SERVICE", "POKE_MCP_SERVICE")
+    service = configured(env, "DEEPTUTOR_MCP_SERVICE")
     if not service:
         print("Service status: not configured (set DEEPTUTOR_MCP_SERVICE to check systemd)")
         return
@@ -112,10 +108,9 @@ def service_status(env):
 
 def status(env):
     local, public = endpoint_urls(env)
-    key_file_value = configured(env, "DEEPTUTOR_MCP_API_KEY_FILE", "POKE_MCP_API_KEY_FILE")
-    keys_file_value = configured(env, "DEEPTUTOR_MCP_CLIENT_KEYS_FILE", "POKE_MCP_USER_KEYS_FILE")
-    client_header_default = "X-Poke-User-Id" if "POKE_MCP_USER_KEYS_FILE" in env else "X-Client-Id"
-    client_header = configured(env, "DEEPTUTOR_MCP_CLIENT_ID_HEADER", "POKE_MCP_CLIENT_ID_HEADER", client_header_default)
+    key_file_value = configured(env, "DEEPTUTOR_MCP_API_KEY_FILE")
+    keys_file_value = configured(env, "DEEPTUTOR_MCP_CLIENT_KEYS_FILE")
+    client_header = configured(env, "DEEPTUTOR_MCP_CLIENT_ID_HEADER", "X-Client-Id")
     service_status(env)
     for label, url in (("Local health", local + "/health"), ("Public health", public + "/health" if public else "")):
         if url:
@@ -153,11 +148,11 @@ def status(env):
 
 
 def create_client_key(env):
-    registry_value = configured(env, "DEEPTUTOR_MCP_CLIENT_KEYS_FILE", "POKE_MCP_USER_KEYS_FILE")
+    registry_value = configured(env, "DEEPTUTOR_MCP_CLIENT_KEYS_FILE")
     if not registry_value:
         raise RuntimeError("Set DEEPTUTOR_MCP_CLIENT_KEYS_FILE in the environment file")
     registry = Path(registry_value)
-    client_id = input("Client ID (Poke user ID, if applicable): ").strip()
+    client_id = input("Client ID: ").strip()
     if not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", client_id):
         print("Invalid ID. Use 1–128 letters, digits, underscores or hyphens.")
         return
@@ -171,7 +166,7 @@ def create_client_key(env):
 
 
 def rotate_server_key(env):
-    path_value = configured(env, "DEEPTUTOR_MCP_API_KEY_FILE", "POKE_MCP_API_KEY_FILE")
+    path_value = configured(env, "DEEPTUTOR_MCP_API_KEY_FILE")
     if not path_value:
         raise RuntimeError("Set DEEPTUTOR_MCP_API_KEY_FILE in the environment file")
     path = Path(path_value)
@@ -185,7 +180,7 @@ def rotate_server_key(env):
 
 
 def revoke_client_key(env):
-    registry_value = configured(env, "DEEPTUTOR_MCP_CLIENT_KEYS_FILE", "POKE_MCP_USER_KEYS_FILE")
+    registry_value = configured(env, "DEEPTUTOR_MCP_CLIENT_KEYS_FILE")
     if not registry_value:
         raise RuntimeError("Set DEEPTUTOR_MCP_CLIENT_KEYS_FILE in the environment file")
     registry = Path(registry_value)
@@ -227,7 +222,7 @@ def main():
             elif choice == "3":
                 revoke_client_key(env)
             elif choice == "4":
-                registry_value = configured(env, "DEEPTUTOR_MCP_CLIENT_KEYS_FILE", "POKE_MCP_USER_KEYS_FILE")
+                registry_value = configured(env, "DEEPTUTOR_MCP_CLIENT_KEYS_FILE")
                 if not registry_value:
                     print("Set DEEPTUTOR_MCP_CLIENT_KEYS_FILE to manage client-specific keys.")
                 else:
