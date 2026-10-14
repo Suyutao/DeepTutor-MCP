@@ -25,7 +25,7 @@ DeepTutor MCP 将 DeepTutor 的学习数据与学习专用工具，通过 MCP �
 
 本地 stdio 与远程 HTTP 共用同一组 60 个工具名称和输入架构。可用 `DEEPTUTOR_MCP_TIMEZONE` 设置练习工具默认时区；为兼容既有部署，代码仍默认使用 `Asia/Shanghai`，新部署的 `.env.example` 使用 `UTC`。
 
-适配器还提供 get_mastery_tutor_tools 和 call_mastery_tutor，将外部 AI 调用转交给 DeepTutor 原生 Mastery Tutor 实现。截至 2026-10-14，所需的上游 HTTP 接口仍在 [HKUDS/DeepTutor PR #1785](https://github.com/HKUDS/DeepTutor/pull/1785) 中等待维护者合并；DeepTutor 部署包含该补丁后才能使用。配置步骤见[内置 Mastery Tutor 接入说明](docs/zh-CN/MASTERY_TUTOR.md)。
+适配器还提供 get_mastery_tutor_tools 和 call_mastery_tutor，将外部 AI 调用转交给 DeepTutor 原生 Mastery Tutor 实现。截至 2026-10-14，所需的上游 HTTP 接口仍在 [HKUDS/DeepTutor PR #1785](https://github.com/HKUDS/DeepTutor/pull/1785) 中等待维护者合并。完整源码补丁已随本仓库提供：`patches/deeptutor-mastery-tutor-http.patch`；基线和手动应用步骤见[内置 Mastery Tutor 接入说明](docs/zh-CN/MASTERY_TUTOR.md)。
 
 ## 后续方向：让 DeepTutor 成为可追溯的学习后端
 

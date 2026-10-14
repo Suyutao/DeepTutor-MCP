@@ -14,6 +14,35 @@ The patch adds:
 - GET /api/mastery-paths/tutor-tools — native tutor tool schemas and instructions.
 - POST /api/mastery-paths/topics/{path_id}/tutor — execute one selected native tool through the same implementation used by DeepTutor's internal tutor.
 
+## Apply the source patch manually
+
+The complete source patch currently proposed by PR #1785 is included at `patches/deeptutor-mastery-tutor-http.patch`. It contains both upstream PR commits, including the test adjustment. The patch was made against DeepTutor commit `f07029cf` (v1.6.13). It is suitable for a source checkout at that exact base; a different base may need a rebase or conflict resolution.
+
+In a clean DeepTutor checkout, create a local branch, check the base, verify applicability, and apply:
+
+~~~sh
+git status --short --branch
+git rev-parse --short HEAD  # expected: f07029cf
+git switch -c local/mastery-tutor-http
+git apply --check /path/to/DeepTutor-MCP/patches/deeptutor-mastery-tutor-http.patch
+git apply /path/to/DeepTutor-MCP/patches/deeptutor-mastery-tutor-http.patch
+~~~
+
+Run the focused test from the DeepTutor checkout using its project environment:
+
+~~~sh
+python -m pytest deeptutor/learning/tests/test_external_tutor.py -q
+~~~
+
+To undo the patch before making other edits, check and reverse it:
+
+~~~sh
+git apply --reverse --check /path/to/DeepTutor-MCP/patches/deeptutor-mastery-tutor-http.patch
+git apply --reverse /path/to/DeepTutor-MCP/patches/deeptutor-mastery-tutor-http.patch
+~~~
+
+Applying the patch changes source files only. Deploying that checkout and restarting a DeepTutor service are separate steps; the MCP adapter and patch file do not change a running installation.
+
 ## Configure the MCP server
 
 Use the existing DeepTutor API connection and authentication settings:

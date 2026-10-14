@@ -14,6 +14,35 @@
 - GET /api/mastery-paths/tutor-tools：返回原生 Tutor 工具架构和调用说明。
 - POST /api/mastery-paths/topics/{path_id}/tutor：通过与 DeepTutor 内部 Tutor 相同的实现执行选定工具。
 
+## 手动应用源码补丁
+
+当前 PR #1785 提议的完整源码补丁已放在 `patches/deeptutor-mastery-tutor-http.patch`。其中包含 PR 的两个提交，包括对应的测试调整。补丁基于 DeepTutor 提交 `f07029cf`（v1.6.13）生成，适用于这个精确基线的源码副本；其他基线可能需要先变基或处理冲突。
+
+在干净的 DeepTutor 源码副本中创建本地分支，检查基线并验证补丁后再应用：
+
+~~~sh
+git status --short --branch
+git rev-parse --short HEAD  # 预期：f07029cf
+git switch -c local/mastery-tutor-http
+git apply --check /path/to/DeepTutor-MCP/patches/deeptutor-mastery-tutor-http.patch
+git apply /path/to/DeepTutor-MCP/patches/deeptutor-mastery-tutor-http.patch
+~~~
+
+使用 DeepTutor 源码副本中的项目环境运行对应测试：
+
+~~~sh
+python -m pytest deeptutor/learning/tests/test_external_tutor.py -q
+~~~
+
+如果尚未在这些文件上继续修改，可以检查并反向应用补丁来撤销：
+
+~~~sh
+git apply --reverse --check /path/to/DeepTutor-MCP/patches/deeptutor-mastery-tutor-http.patch
+git apply --reverse /path/to/DeepTutor-MCP/patches/deeptutor-mastery-tutor-http.patch
+~~~
+
+应用补丁只会修改源码。部署该源码副本并重启 DeepTutor 服务是单独的步骤；MCP 适配器和补丁文件不会更改正在运行的安装。
+
 ## 配置 MCP 服务
 
 复用当前 DeepTutor API 地址和认证配置：

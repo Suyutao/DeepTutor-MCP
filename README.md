@@ -27,7 +27,7 @@ All 60 tools publish an MCP output schema and return the original DeepTutor payl
 
 The current 60 tool names and input schemas are kept identical across stdio and remote HTTP. `DEEPTUTOR_MCP_TIMEZONE` can set the default used by Practice tools; the legacy default remains `Asia/Shanghai` for existing installations, while `.env.example` shows `UTC` for a fresh deployment.
 
-The adapter exposes get_mastery_tutor_tools and call_mastery_tutor for the built-in DeepTutor Mastery tutor. They delegate through DeepTutor's native implementation. As of 2026-10-14, the required upstream endpoints are proposed in [HKUDS/DeepTutor PR #1785](https://github.com/HKUDS/DeepTutor/pull/1785), which is open and waiting for maintainer merge. Use these tools after DeepTutor has a deployment containing the patch. See [Mastery tutor setup](docs/MASTERY_TUTOR.md).
+The adapter exposes get_mastery_tutor_tools and call_mastery_tutor for the built-in DeepTutor Mastery tutor. They delegate through DeepTutor's native implementation. As of 2026-10-14, the required upstream endpoints are proposed in [HKUDS/DeepTutor PR #1785](https://github.com/HKUDS/DeepTutor/pull/1785), which is open and waiting for maintainer merge. The complete source patch is bundled at `patches/deeptutor-mastery-tutor-http.patch` for manual application; see [Mastery tutor setup](docs/MASTERY_TUTOR.md) for the base commit and instructions.
 
 ## Future direction: DeepTutor as a learning backend
 
