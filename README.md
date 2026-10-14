@@ -8,10 +8,10 @@ The same canonical tool catalog is available through local stdio and remote Stre
 
 ## Capabilities
 
-The current catalog contains 58 tools covering:
+The current catalog contains 60 tools covering:
 
 - DeepTutor status, courses, syllabus, and linked resources
-- Mastery Paths, outlines, evidence, change history, and review settings
+- Mastery Paths, outlines, evidence, change history, review settings, and the built-in tutor workflow
 - Native Question Bank and Practice queues, answer checks, reviews, and analytics
 - Generated Books, Reading materials, notes, highlights, and bookmarks
 - Notebooks and saved records
@@ -23,17 +23,17 @@ Ordinary explanation, teaching, planning, and synthesis run in the connected AI 
 
 Writes are marked in tool descriptions and require `confirm: true`. This is an application-level guard, not a substitute for endpoint authentication, network controls, or user review. Outline replacement checks a revision; Practice reviews use the current item version and a unique request ID.
 
-All 58 tools publish an MCP output schema and return the original DeepTutor payload under `structuredContent.result`. The existing text content channel continues to carry the JSON representation for clients that do not consume structured results. The schema intentionally leaves the payload's internal fields open because those are determined by the corresponding DeepTutor API and can vary by version.
+All 60 tools publish an MCP output schema and return the original DeepTutor payload under `structuredContent.result`. The existing text content channel continues to carry the JSON representation for clients that do not consume structured results. The schema intentionally leaves the payload's internal fields open because those are determined by the corresponding DeepTutor API and can vary by version.
 
-The current 58 tool names and input schemas are kept identical across stdio and remote HTTP. `DEEPTUTOR_MCP_TIMEZONE` can set the default used by Practice tools; the legacy default remains `Asia/Shanghai` for existing installations, while `.env.example` shows `UTC` for a fresh deployment.
+The current 60 tool names and input schemas are kept identical across stdio and remote HTTP. `DEEPTUTOR_MCP_TIMEZONE` can set the default used by Practice tools; the legacy default remains `Asia/Shanghai` for existing installations, while `.env.example` shows `UTC` for a fresh deployment.
+
+The adapter exposes get_mastery_tutor_tools and call_mastery_tutor for the built-in DeepTutor Mastery tutor. They delegate through DeepTutor's native implementation. As of 2026-10-14, the required upstream endpoints are proposed in [HKUDS/DeepTutor PR #1785](https://github.com/HKUDS/DeepTutor/pull/1785), which is open and waiting for maintainer merge. Use these tools after DeepTutor has a deployment containing the patch. See [Mastery tutor setup](docs/MASTERY_TUTOR.md).
 
 ## Future direction: DeepTutor as a learning backend
 
-This MCP server wraps DeepTutor's existing APIs; it can expose only the operations and data semantics those APIs provide. External clients can write learning outcomes such as mastery updates, but their questions, incorrect attempts, misunderstandings, corrections, and feedback remain in the client conversation. These are critically important evidence for understanding how a learner thinks, and outcome-only records are very likely to miss difficulties revealed during learning.
+This MCP server delegates to DeepTutor APIs and preserves their data semantics. The built-in Mastery tutor transport proposed in [upstream PR #1785](https://github.com/HKUDS/DeepTutor/pull/1785) lets an external AI use the same native tutor tools over HTTP; supported quizzes, grading, assessments, and turn transcripts are recorded through DeepTutor's existing implementation. The PR is open and awaiting maintainer merge, so the adapter tools require a DeepTutor deployment that includes those endpoints.
 
-This cannot be addressed reliably by adding an MCP wrapper alone. DeepTutor itself would need stable backend APIs and data structures for external clients to submit learning-process records, with provenance that identifies who made each claim, which client and conversation it came from, what evidence supports it, and when it was recorded. In particular, a learner's explicit self-report, a tutor's assessment, and a system assessment based on practice evidence must remain distinct and coexist; a tutor judgment must never be stored as if the learner confirmed mastery. Useful provenance may include actor type and ID, source client/conversation, evidence references, confidence, and timestamp.
-
-Once DeepTutor provides these backend capabilities, this MCP project can adapt and expose them to compatible clients. This is an upstream-dependent design direction, not a capability implemented or promised by the current MCP tools.
+The tutor transport covers the built-in operations and transcript capture; it is not a general-purpose API for submitting arbitrary evidence records. A learner's explicit self-report, a tutor's assessment, and a system assessment based on practice evidence must remain distinct. A tutor judgment must never be stored as if the learner confirmed mastery.
 
 ## Requirements
 
@@ -82,6 +82,8 @@ Some clients require OAuth instead of API keys. Place the MCP endpoint behind an
 The MCP project does not operate an OAuth account service. A gateway may be Cloudflare Access or another provider that can securely supply a verifiable signed assertion. Provider-specific setup belongs in the deployment guide, not in the core bridge.
 
 ## Client setup guides
+
+- [Built-in Mastery tutor tools](docs/MASTERY_TUTOR.md)
 
 - [ChatGPT custom MCP app](docs/CHATGPT.md)
 - [Poke](docs/POKE.md)

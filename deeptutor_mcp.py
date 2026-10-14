@@ -26,6 +26,7 @@ SSH_TARGET = setting("DEEPTUTOR_SSH_TARGET")
 REMOTE_CLI = setting("DEEPTUTOR_REMOTE_CLI", "deeptutor")
 REMOTE_HOME = setting("DEEPTUTOR_REMOTE_HOME")
 DEFAULT_TIMEZONE = setting("DEEPTUTOR_MCP_TIMEZONE", "Asia/Shanghai")
+TUTOR_CLIENT_ID = setting("DEEPTUTOR_MCP_TUTOR_CLIENT_ID", "deeptutor-mcp") or "deeptutor-mcp"
 
 
 def http(method, path, *, query=None, body=None):
@@ -155,6 +156,29 @@ def run_turn(args):
 
 
 def dispatch(name, args):
+    if name == "get_mastery_tutor_tools":
+        return http("GET", "/api/mastery-paths/tutor-tools")
+    if name == "call_mastery_tutor":
+        required(args, "path_id", "session_id", "turn_id", "request_id", "tool")
+        confirmed(args)
+        if not isinstance(args.get("arguments", {}), dict):
+            raise ValueError("arguments must be an object")
+        request_id = args["request_id"]
+        if not isinstance(request_id, str) or len(request_id) < 16:
+            raise ValueError("request_id must contain at least 16 characters")
+        body = {
+            "client_id": TUTOR_CLIENT_ID,
+            "session_id": args["session_id"],
+            "turn_id": args["turn_id"],
+            "request_id": request_id,
+            "tool": args["tool"],
+            "arguments": args.get("arguments", {}),
+        }
+        for key in ("user_message", "assistant_message"):
+            if key in args:
+                body[key] = args[key]
+        path = "/api/mastery-paths/topics/" + segment(args["path_id"]) + "/tutor"
+        return http("POST", path, body=body)
     if name == "search_vector_knowledge":
         return vector_search(args)
     if name == "deeptutor_status":
@@ -462,6 +486,18 @@ TOOLS = [
     tool("attach_course_resource", "Attach an existing book, knowledge base, notebook or other supported resource to a course", {**COURSE, "kind": S("Resource kind from list_course_resource_candidates"), "ref_id": S("Existing resource ID"), "label": S("Display label"), **CONFIRM}, ["course_id", "kind", "ref_id", "confirm"]),
     tool("list_mastery_paths", "List every Mastery Path as a compact summary with total count, progress, next point and due reviews; use get_mastery_path for the full outline"),
     tool("get_mastery_path", "Read one Mastery Path, including outline, revision and reviews", PATH, ["path_id"]),
+    tool("get_mastery_tutor_tools", "Read DeepTutor's native Mastery tutor schemas and instructions before calling the built-in tutor over HTTP; requires DeepTutor with the upstream tutor-tools patch"),
+    tool("call_mastery_tutor", "Invoke a built-in DeepTutor Mastery tutor tool through its native implementation. Read get_mastery_tutor_tools first. Use only for a user-requested Mastery tutoring session. Keep session_id stable for the session, reuse turn_id for calls in one learner turn, use a unique request_id (at least 16 characters) per call and reuse it on transport retry. Include the learner's exact text on the first call of a turn and save the full tutor reply with tool=record_turn.", {
+        **PATH,
+        "session_id": S("Stable ID for this tutoring session"),
+        "turn_id": S("Stable ID shared by tool calls for one learner turn"),
+        "request_id": S("Unique ID for this call; reuse it when retrying this request", minLength=16),
+        "tool": S("Native tool name returned by get_mastery_tutor_tools; also use record_turn to save the completed tutor reply"),
+        "arguments": {"type": "object", "description": "Arguments matching the selected native tool schema", "additionalProperties": True},
+        "user_message": S("Learner's exact message; provide on the first call of the turn"),
+        "assistant_message": S("Full tutor reply; provide when saving the completed turn with record_turn"),
+        **CONFIRM,
+    }, ["path_id", "session_id", "turn_id", "request_id", "tool", "confirm"]),
     tool("replace_mastery_outline", "Replace the full outline after review; preserves IDs supplied in modules and checks revision", {**PATH, "expected_revision": I("Revision read from get_mastery_path"), "modules": {"type": "array", "items": {"type": "object"}, "description": "Complete modules array in DeepTutor ModuleInput shape"}, **CONFIRM}, ["path_id", "expected_revision", "modules", "confirm"]),
     tool("get_mastery_review_settings", "Read a path's desired retention", PATH, ["path_id"]),
     tool("set_mastery_review_settings", "Set desired retention between 0.70 and 0.99", {**PATH, "desired_retention": {"type": "number"}, **CONFIRM}, ["path_id", "desired_retention", "confirm"]),

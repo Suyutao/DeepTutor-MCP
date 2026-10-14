@@ -6,10 +6,10 @@ DeepTutor MCP 将 DeepTutor 的学习数据与学习专用工具，通过 MCP �
 
 ## 能力
 
-当前工具目录包含 58 个工具，涵盖：
+当前工具目录包含 60 个工具，涵盖：
 
 - DeepTutor 状态、课程、教学大纲和课程资源
-- 精通之路、完整大纲、证据、变更记录和复习设置
+- 精通之路、完整大纲、证据、变更记录、复习设置和 DeepTutor 内置 Tutor 流程
 - DeepTutor 原生题库、练习队列、答案核对、复习记录和统计
 - 生成式教材、阅读材料、批注、高亮和书签
 - 笔记本及已保存的学习记录
@@ -21,17 +21,17 @@ DeepTutor MCP 将 DeepTutor 的学习数据与学习专用工具，通过 MCP �
 
 写入工具在描述中带有警告，并要求 `confirm: true`。这只是应用层保护，不能代替接口认证、网络访问限制或用户检查。替换精通之路大纲时会校验修订版本；练习复习会使用当前题目版本和唯一请求 ID。
 
-本项目为 58 个工具公布 MCP 输出架构，并在 `structuredContent` 中以 `result` 字段提供 DeepTutor 原始结果。文本内容通道继续保留原有 JSON 表示，兼顾不读取结构化结果的旧客户端。输出架构故意不约束 DeepTutor API 返回对象的内部字段，因此不会把随 DeepTutor 版本变化的 API 结构伪装成稳定承诺。
+本项目为 60 个工具公布 MCP 输出架构，并在 `structuredContent` 中以 `result` 字段提供 DeepTutor 原始结果。文本内容通道继续保留原有 JSON 表示，兼顾不读取结构化结果的旧客户端。输出架构故意不约束 DeepTutor API 返回对象的内部字段，因此不会把随 DeepTutor 版本变化的 API 结构伪装成稳定承诺。
 
-本地 stdio 与远程 HTTP 共用同一组 58 个工具名称和输入架构。可用 `DEEPTUTOR_MCP_TIMEZONE` 设置练习工具默认时区；为兼容既有部署，代码仍默认使用 `Asia/Shanghai`，新部署的 `.env.example` 使用 `UTC`。
+本地 stdio 与远程 HTTP 共用同一组 60 个工具名称和输入架构。可用 `DEEPTUTOR_MCP_TIMEZONE` 设置练习工具默认时区；为兼容既有部署，代码仍默认使用 `Asia/Shanghai`，新部署的 `.env.example` 使用 `UTC`。
+
+适配器还提供 get_mastery_tutor_tools 和 call_mastery_tutor，将外部 AI 调用转交给 DeepTutor 原生 Mastery Tutor 实现。截至 2026-10-14，所需的上游 HTTP 接口仍在 [HKUDS/DeepTutor PR #1785](https://github.com/HKUDS/DeepTutor/pull/1785) 中等待维护者合并；DeepTutor 部署包含该补丁后才能使用。配置步骤见[内置 Mastery Tutor 接入说明](docs/zh-CN/MASTERY_TUTOR.md)。
 
 ## 后续方向：让 DeepTutor 成为可追溯的学习后端
 
-本 MCP 服务本质上是对 DeepTutor 现有 API 的封装，只能提供这些 API 已有的操作和数据语义。外部客户端目前可以写入掌握状态等学习结果，但学习者的问题、错误尝试、暴露出的误解、后续纠正和收到的反馈仍留在客户端对话中。这些都是理解学习者思路的极其重要的证据；只记录最终结果，很可能漏掉学习过程中暴露的困难。
+本 MCP 服务沿用 DeepTutor API 的数据语义。上游 [PR #1785](https://github.com/HKUDS/DeepTutor/pull/1785) 提议开放内置 Mastery Tutor 的 HTTP 调用，使外部 AI 也能调用同一套原生出题、批改、测评和对话记录操作。支持的练习结果与 Tutor 轮次文本会由 DeepTutor 原有实现保存。该 PR 仍在等待维护者合并，因此本适配器中的 Tutor 工具需要部署已包含这些接口的 DeepTutor。
 
-仅在 MCP 封装层增加功能，无法可靠解决这个问题。DeepTutor 本身需要提供稳定的后端 API 和数据结构，让外部客户端提交学习过程记录，并保留每项判断的来源：由谁作出、来自哪个客户端和会话、依据什么证据、何时记录。尤其要区分并并列保存用户显式自我声明、Tutor 的教学判断，以及基于练习证据的系统测评；Tutor 的判断不能写成用户本人确认掌握。可记录的来源信息包括行为者类型和标识、来源客户端与会话、证据引用、置信度和时间。
-
-DeepTutor 提供这些后端能力后，本 MCP 项目再负责将它们适配并开放给兼容客户端。这是依赖 DeepTutor 上游改进的后续设计方向，当前 MCP 工具尚未实现或承诺提供此能力。
+这条 Tutor 通道覆盖现有内置操作和对话文本记录，不提供任意格式 evidence 的通用提交接口。用户显式自我声明、Tutor 判断和基于练习证据的系统测评仍必须分别保留，不能将 Tutor 判断记成用户本人确认掌握。
 
 ## 环境要求
 
@@ -80,6 +80,8 @@ MCP 地址为 `/mcp`；`/health` 只检查进程是否响应。若由反向代�
 本项目不提供 OAuth 账号服务。网关可以是 Cloudflare Access，也可以是其他能提供可验证签名断言的服务。核心桥接不依赖某一家供应商。
 
 ## ChatGPT 客户端说明
+
+Mastery Tutor 工具的额外配置与调用步骤见[内置 Mastery Tutor 接入说明](docs/zh-CN/MASTERY_TUTOR.md)。
 
 ChatGPT 的自定义 MCP 应用需要用户自己在网页端配置远程地址、认证方式并扫描工具。官方套餐说明没有列出 Plus；但维护者实测某个 Plus 账号在开启开发者模式后能看到添加 MCP 服务器的入口。这只能证明该账号可进入接入流程，不能保证所有 Plus 账号或完整读写能力均可用，可能与灰度或分批开放有关。维护者还实测网页端添加并授权后，同一账号可在 ChatGPT 手机应用及其他支持 ChatGPT Apps 的客户端中调用。该观察与 OpenAI 当前“仅支持网页端”的说明不一致，不能保证所有用户都可复现。上传 ChatGPT 插件 ZIP 与部署 MCP 后端是两件不同的事；上传不会替用户运行 DeepTutor 或完成后端授权。请查看[ChatGPT 官方开发者模式与 MCP 应用说明](https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt)、[插件 ZIP 说明](https://help.openai.com/en/articles/20001256-plugins-in-chatgpt-and-codex)和[接入步骤](docs/zh-CN/CHATGPT.md)。
 
